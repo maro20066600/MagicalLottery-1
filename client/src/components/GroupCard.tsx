@@ -82,18 +82,18 @@ export default function GroupCard({
   // Function to get colored background for revealed cards based on group theme
   const getRevealedBackgroundColor = (theme: string) => {
     const backgrounds: Record<string, string> = {
-      'red-gold': 'bg-gradient-to-r from-red-100 to-red-50 border-hogwarts-gold',
-      'blue-silver': 'bg-gradient-to-r from-blue-100 to-blue-50 border-gray-300',
-      'green-silver': 'bg-gradient-to-r from-green-100 to-green-50 border-gray-300',
-      'yellow-black': 'bg-gradient-to-r from-yellow-100 to-yellow-50 border-hogwarts-dark',
-      'purple-gold': 'bg-gradient-to-r from-purple-100 to-purple-50 border-hogwarts-gold',
-      'light-blue-silver': 'bg-gradient-to-r from-sky-100 to-sky-50 border-gray-300',
-      'dark-green-gold': 'bg-gradient-to-r from-emerald-100 to-emerald-50 border-hogwarts-gold',
-      'burgundy-silver': 'bg-gradient-to-r from-rose-100 to-rose-50 border-gray-300',
-      'black-gold': 'bg-gradient-to-r from-gray-100 to-gray-50 border-hogwarts-gold'
+      'red-gold': 'bg-gradient-to-r from-red-800 to-red-700 border-hogwarts-gold text-white',
+      'blue-silver': 'bg-gradient-to-r from-blue-800 to-blue-700 border-gray-300 text-white',
+      'green-silver': 'bg-gradient-to-r from-green-800 to-green-700 border-gray-300 text-white',
+      'yellow-black': 'bg-gradient-to-r from-yellow-700 to-yellow-600 border-hogwarts-dark text-white',
+      'purple-gold': 'bg-gradient-to-r from-purple-800 to-purple-700 border-hogwarts-gold text-white',
+      'light-blue-silver': 'bg-gradient-to-r from-sky-800 to-sky-700 border-gray-300 text-white',
+      'dark-green-gold': 'bg-gradient-to-r from-emerald-800 to-emerald-700 border-hogwarts-gold text-white',
+      'burgundy-silver': 'bg-gradient-to-r from-rose-800 to-rose-700 border-gray-300 text-white',
+      'black-gold': 'bg-gradient-to-r from-slate-800 to-slate-700 border-hogwarts-gold text-white'
     };
     
-    return backgrounds[theme] || 'bg-gradient-to-r from-hogwarts-light to-hogwarts-light/80 border-hogwarts-gold';
+    return backgrounds[theme] || 'bg-gradient-to-r from-hogwarts-dark to-hogwarts-dark/80 border-hogwarts-gold text-white';
   };
 
   const styles = getGroupStyles(group.theme);
@@ -124,18 +124,21 @@ export default function GroupCard({
                         : 'bg-gradient-to-r from-hogwarts-dark/80 to-hogwarts-dark/50 border-hogwarts-dark hover:border-hogwarts-gold'}
             `}
             whileHover={!governorate.revealed ? { scale: 1.03, rotate: 1 } : {}}
-            animate={governorate.revealed ? { scale: [1, 1.05, 1] } : {}}
-            transition={{ duration: 0.5 }}
+            animate={governorate.revealed ? 
+              { scale: [1, 1.05, 1], rotateY: [0, 180, 360], opacity: [0.7, 1] } 
+              : {}
+            }
+            transition={{ duration: 1.2, ease: "easeInOut" }}
           >
             <div className="flex items-center justify-center">
               {governorate.revealed ? (
                 <div className="text-center">
                   <i className="fas fa-wand-sparkles text-2xl text-hogwarts-gold mb-2"></i>
-                  <div className="text-lg font-bold text-hogwarts-blue">{governorate.name}</div>
-                  <div className="mt-1 text-sm text-hogwarts-red">
+                  <div className="text-lg font-bold text-white">{governorate.name}</div>
+                  <div className="mt-1 text-sm text-hogwarts-gold">
                     <i className="fas fa-hat-wizard mr-1"></i> {group.name}
                   </div>
-                  <div className="mt-2 text-xs">{group.theme.split('-').join(' | ')}</div>
+                  <div className="mt-2 text-xs text-gray-200">{group.theme.split('-').join(' | ')}</div>
                 </div>
               ) : (
                 <div className="text-center py-2">
