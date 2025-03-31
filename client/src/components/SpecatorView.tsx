@@ -246,49 +246,17 @@ export default function SpectatorView() {
     >
       <div className="absolute inset-0 bg-hogwarts-dark bg-opacity-70" />
       
-      {/* Moving magical particles background */}
-      <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full bg-hogwarts-gold"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              scale: Math.random() * 0.5 + 0.5,
-              opacity: Math.random() * 0.5 + 0.5
-            }}
-            animate={{
-              x: [
-                Math.random() * window.innerWidth,
-                Math.random() * window.innerWidth,
-                Math.random() * window.innerWidth
-              ],
-              y: [
-                Math.random() * window.innerHeight,
-                Math.random() * window.innerHeight,
-                Math.random() * window.innerHeight
-              ],
-              opacity: [0.3, 0.8, 0.3]
-            }}
-            transition={{
-              duration: Math.random() * 20 + 15,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-        ))}
-      </div>
+
       
       {/* Header */}
       <header className="relative z-10 text-center py-8">
-        <FontHarryP className="text-hogwarts-blue text-6xl md:text-7xl lg:text-8xl mb-2">
+        <FontHarryP className="text-hogwarts-gold text-6xl md:text-7xl lg:text-8xl mb-2">
           YLY COMPETITION
         </FontHarryP>
         <FontHarryP className="text-hogwarts-light text-3xl md:text-4xl lg:text-5xl">
           make your magic
         </FontHarryP>
-        <div className="w-full max-w-xl mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-red to-transparent mt-4" />
+        <div className="w-full max-w-xl mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-gold to-transparent mt-4" />
       </header>
       
       {/* Spectator View Controls */}
@@ -576,8 +544,8 @@ export default function SpectatorView() {
                   <ul className="space-y-2">
                     <li>• Use fullscreen mode (F key) for the best viewing experience</li>
                     <li>• Groups auto-cycle every 15 seconds for hands-free viewing</li>
-                    <li>• Each group has unique magical animations matching its theme</li>
-                    <li>• Revealed governorates display special magical effects</li>
+                    <li>• Each group has unique magical styling matching its theme</li>
+                    <li>• Revealed governorates display special golden effects</li>
                     <li>• Navigate between groups using arrow keys or the dots below</li>
                     <li>• Press H anytime to show this help screen again</li>
                   </ul>
