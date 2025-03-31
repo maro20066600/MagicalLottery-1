@@ -26,9 +26,11 @@ export default function YouTubePlayer() {
           controls: 0
         },
         events: {
-          'onReady': () => {
+          'onReady': (event: any) => {
             // Set player volume to a lower level to not overwhelm the UI sounds
             newPlayer.setVolume(30);
+            // Start playing automatically
+            event.target.playVideo();
             setPlayerReady(true);
             setPlayer(newPlayer);
           }
