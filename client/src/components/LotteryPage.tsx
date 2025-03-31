@@ -117,12 +117,6 @@ export default function LotteryPage({}: LotteryPageProps) {
     >
       <div className="absolute inset-0 bg-hogwarts-dark bg-opacity-70" />
       
-      {/* Top bar with logos */}
-      <div className="fixed top-0 left-0 w-full flex justify-between items-center px-5 py-3 bg-white/80 backdrop-blur-sm z-50 shadow-md">
-        <div className="logo"><img src="https://i.postimg.cc/x8zM7DSg/Artboard-6-2-1.png" alt="لوجو 1" className="w-[100px] h-[100px] object-contain" /></div>
-        <div className="logo"><img src="https://i.postimg.cc/L4czPXzW/Artboard-1.png" alt="لوجو 2" className="w-[120px] h-[120px] object-contain" /></div>
-      </div>
-      
       {/* Header Section */}
       <header className="relative z-10 text-center py-8 pt-28">
         <FontHarryP className="text-hogwarts-gold text-4xl md:text-5xl lg:text-6xl mb-2">
