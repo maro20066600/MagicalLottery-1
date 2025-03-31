@@ -1,86 +1,101 @@
-import { motion } from 'framer-motion';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import { Governorate } from '@shared/schema';
-import { FontHarryP } from '@/components/ui/font-harry-p';
-import { Card } from '@/components/ui/card';
-import { useSound } from '@/hooks/use-sound';
-import { cardFlip } from '@/lib/animations';
 
 interface MagicCardProps {
   governorate: Governorate;
-  isRevealed: boolean;
   onClick: () => void;
+  isRevealed: boolean;
+  isLotteryStarted: boolean;
+  groupName?: string;
+  className?: string;
 }
 
-export default function MagicCard({ governorate, isRevealed, onClick }: MagicCardProps) {
-  const { playRandomMagicSound } = useSound();
+export default function MagicCard({
+  governorate,
+  onClick,
+  isRevealed,
+  isLotteryStarted,
+  groupName,
+  className
+}: MagicCardProps) {
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [displayName, setDisplayName] = useState(governorate.name);
+  const [shuffleCount, setShuffleCount] = useState(0);
+  const allGovernorates = [
+    "القاهرة", "الإسكندرية", "الجيزة", "القليوبية", "الشرقية",
+    "الدقهلية", "البحيرة", "المنيا", "سوهاج", "أسيوط",
+    "الغربية", "كفر الشيخ", "المنوفية", "بني سويف", "الفيوم"
+  ];
 
-  // Icons for different governorates (or default to landmark)
-  const getGovernorateIcon = (name: string) => {
-    const icons: Record<string, string> = {
-      'Cairo': 'fa-landmark',
-      'Alexandria': 'fa-mosque',
-      'Aswan': 'fa-mountain',
-      'Port Said': 'fa-water',
-      'Fayoum': 'fa-seedling',
-      'Ministry Team': 'fa-lightbulb',
-      'Capital': 'fa-building',
-      '5G': 'fa-wifi'
-    };
+  const handleClick = async () => {
+    if (!isLotteryStarted || isRevealed || isShuffling) return;
     
-    return icons[name] || 'fa-landmark';
-  };
-  
-  // Handler for card click with delay
-  const handleCardClick = () => {
-    playRandomMagicSound();
-    
-    // Delay for animation effect (2 seconds)
-    setTimeout(() => {
-      onClick();
-    }, 2000);
+    setIsShuffling(true);
+    let count = 0;
+    const shuffleInterval = setInterval(() => {
+      setDisplayName(allGovernorates[Math.floor(Math.random() * allGovernorates.length)]);
+      count++;
+      setShuffleCount(count);
+      if (count >= 10) {
+        clearInterval(shuffleInterval);
+        setDisplayName(governorate.name);
+        setIsShuffling(false);
+        onClick();
+      }
+    }, 200);
   };
 
   return (
     <motion.div
-      className={`card-flip ${isRevealed ? 'is-flipped' : ''}`}
-      whileHover={{ scale: isRevealed ? 1 : 1.03 }}
-      onClick={!isRevealed ? handleCardClick : undefined}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      variants={cardFlip}
-      transition={{ duration: 0.5 }}
+      className={cn(
+        "relative cursor-pointer perspective-1000",
+        className
+      )}
+      onClick={handleClick}
+      whileHover={{ scale: isLotteryStarted && !isRevealed ? 1.05 : 1 }}
+      animate={{
+        rotateY: isRevealed ? 180 : 0,
+        scale: isShuffling ? 1.1 : 1
+      }}
+      transition={{ duration: 0.6, type: "spring" }}
     >
-      <Card className="relative w-full h-64 perspective">
-        <div className={`card-inner w-full h-full transition-transform duration-500 ${isRevealed ? 'rotate-y-180' : ''}`}>
-          {/* Card Front */}
-          <div className="card-front absolute inset-0 bg-gradient-to-br from-hogwarts-blue to-hogwarts-dark rounded-lg border-2 border-hogwarts-gold p-4 flex flex-col items-center justify-center backface-hidden">
-            <motion.div 
-              className="text-6xl text-hogwarts-gold mb-4"
-              animate={{ y: [0, 15, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            >
-              ?
-            </motion.div>
-            <p className="font-serif text-lg text-hogwarts-light">انقر للكشف عن المحافظة</p>
-            <div className="absolute inset-0 rounded-lg bg-radial-glow" />
-          </div>
-          
-          {/* Card Back */}
-          <div className="card-back absolute inset-0 bg-hogwarts-light rounded-lg border-2 border-hogwarts-gold p-4 flex flex-col items-center justify-center backface-hidden rotate-y-180">
-            <div className="w-16 h-16 flex items-center justify-center mb-3">
-              <i className={`fas ${getGovernorateIcon(governorate.name)} text-4xl text-hogwarts-blue`}></i>
-            </div>
-            <FontHarryP className="text-2xl text-hogwarts-blue mb-1 text-center">
-              {governorate.name}
-            </FontHarryP>
-            {governorate.groupName && (
-              <p className="font-serif text-sm text-hogwarts-dark text-center">
-                المجموعة: <span className="font-bold text-hogwarts-red">{governorate.groupName}</span>
-              </p>
-            )}
+      <div className={cn(
+        "w-full aspect-[3/4] rounded-xl shadow-xl transition-all duration-500",
+        "bg-gradient-to-br from-hogwarts-gold/20 to-hogwarts-gold/40",
+        "border-2 border-hogwarts-gold",
+        isRevealed ? "opacity-0" : "opacity-100",
+        isLotteryStarted && !isRevealed ? "hover:shadow-hogwarts-gold/50 hover:shadow-lg" : ""
+      )}>
+        <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+          <h3 className="font-[HarryP] text-2xl text-hogwarts-light mb-2">
+            {isShuffling ? displayName : governorate.name}
+          </h3>
+          <div className="w-16 h-16 mb-2">
+            <img
+              src="/wand-sparkles-solid.svg"
+              alt="Magic Wand"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
-      </Card>
+      </div>
+
+      <div className={cn(
+        "absolute inset-0 w-full aspect-[3/4] rounded-xl shadow-xl",
+        "bg-gradient-to-br from-hogwarts-blue to-hogwarts-dark",
+        "border-2 border-hogwarts-gold rotateY-180 backface-hidden",
+        "flex flex-col items-center justify-center p-4 text-center"
+      )}>
+        <h3 className="font-[HarryP] text-2xl text-hogwarts-light mb-2">
+          {governorate.name}
+        </h3>
+        <p className="font-[HarryP] text-xl text-hogwarts-gold">
+          {groupName}
+        </p>
+      </div>
     </motion.div>
   );
 }
