@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontHarryP } from "@/components/ui/font-harry-p";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ export default function SpectatorView() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [, setLocation] = useLocation();
+  const autoChangeTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch governorates data
   const { data: governorates, isLoading: isLoadingGovernorates } = useQuery<Governorate[]>({
@@ -26,15 +27,43 @@ export default function SpectatorView() {
     refetchInterval: 3000 // Auto refresh every 3 seconds
   });
 
+  // Navigate between groups
+  const navigateGroups = useCallback((direction: 'prev' | 'next') => {
+    if (!groups || groups.length === 0) return;
+    
+    if (direction === 'prev') {
+      setActiveGroupIndex(prev => 
+        prev === 0 ? groups.length - 1 : prev - 1
+      );
+    } else {
+      setActiveGroupIndex(prev => 
+        prev === groups.length - 1 ? 0 : prev + 1
+      );
+    }
+    
+    // Reset the auto-cycle timer when manually navigating
+    if (autoChangeTimer.current) {
+      clearInterval(autoChangeTimer.current);
+      autoChangeTimer.current = setInterval(() => {
+        setActiveGroupIndex(current => (current + 1) % groups.length);
+      }, 15000);
+    }
+  }, [groups]);
+  
   // Auto-cycle through groups every 15 seconds
   useEffect(() => {
     if (!groups || groups.length <= 1) return;
     
-    const intervalId = setInterval(() => {
+    autoChangeTimer.current = setInterval(() => {
       setActiveGroupIndex(current => (current + 1) % groups.length);
     }, 15000);
     
-    return () => clearInterval(intervalId);
+    return () => {
+      if (autoChangeTimer.current) {
+        clearInterval(autoChangeTimer.current);
+        autoChangeTimer.current = null;
+      }
+    };
   }, [groups]);
   
   // Toggle fullscreen mode
@@ -82,12 +111,10 @@ export default function SpectatorView() {
       
       // Arrow keys to navigate groups
       if (e.key === 'ArrowRight' && groups) {
-        setActiveGroupIndex(current => (current + 1) % groups.length);
+        navigateGroups('next');
       }
       if (e.key === 'ArrowLeft' && groups) {
-        setActiveGroupIndex(current => 
-          current === 0 ? groups.length - 1 : current - 1
-        );
+        navigateGroups('prev');
       }
       
       // Home key to return to main page
@@ -98,7 +125,7 @@ export default function SpectatorView() {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [groups, toggleFullscreen, toggleHelp, showHelp, setLocation]);
+  }, [groups, toggleFullscreen, toggleHelp, showHelp, setLocation, navigateGroups]);
 
   // Group governorates by their assigned group
   const governoratesByGroup = useMemo(() => {
@@ -211,13 +238,47 @@ export default function SpectatorView() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-cover bg-center relative pb-16"
+      className="min-h-screen bg-cover bg-center relative pb-16 overflow-hidden"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')" }}
       initial="hidden"
       animate="visible"
       variants={fadeIn}
     >
       <div className="absolute inset-0 bg-hogwarts-dark bg-opacity-70" />
+      
+      {/* Moving magical particles background */}
+      <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-hogwarts-gold"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+              scale: Math.random() * 0.5 + 0.5,
+              opacity: Math.random() * 0.5 + 0.5
+            }}
+            animate={{
+              x: [
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerWidth
+              ],
+              y: [
+                Math.random() * window.innerHeight,
+                Math.random() * window.innerHeight,
+                Math.random() * window.innerHeight
+              ],
+              opacity: [0.3, 0.8, 0.3]
+            }}
+            transition={{
+              duration: Math.random() * 20 + 15,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        ))}
+      </div>
       
       {/* Header */}
       <header className="relative z-10 text-center py-8">
@@ -231,47 +292,91 @@ export default function SpectatorView() {
       </header>
       
       {/* Spectator View Controls */}
-      <div className="relative z-10 container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="flex space-x-4">
-          <Button
-            onClick={() => setLocation('/')}
-            variant="outline" 
-            className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark"
-          >
-            <i className="fas fa-arrow-left mr-2"></i> Exit Spectator
-          </Button>
-          <Button
-            onClick={toggleFullscreen}
-            variant="outline" 
-            className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark"
-          >
-            <i className={`fas ${isFullscreen ? 'fa-compress' : 'fa-expand'} mr-2`}></i>
-            {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-          </Button>
+      <div className="relative z-10 container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="flex space-x-4 w-full md:w-auto justify-center md:justify-start">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={() => setLocation('/')}
+              variant="outline" 
+              className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark transition-all shadow-md hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]"
+            >
+              <i className="fas fa-arrow-left mr-2"></i> Exit Spectator
+            </Button>
+          </motion.div>
           
-          <Button
-            onClick={toggleHelp}
-            variant="outline" 
-            className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark"
-          >
-            <i className="fas fa-question-circle mr-2"></i>
-            Help
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={toggleFullscreen}
+              variant="outline" 
+              className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark transition-all shadow-md hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]"
+            >
+              <i className={`fas ${isFullscreen ? 'fa-compress' : 'fa-expand'} mr-2`}></i>
+              {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            </Button>
+          </motion.div>
+          
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={toggleHelp}
+              variant="outline" 
+              className="bg-hogwarts-dark/50 border-hogwarts-gold text-hogwarts-light hover:bg-hogwarts-dark transition-all shadow-md hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]"
+            >
+              <i className="fas fa-question-circle mr-2"></i>
+              Help
+            </Button>
+          </motion.div>
         </div>
         
         {groups && groups.length > 0 && (
-          <div className="flex space-x-2 overflow-x-auto hide-scrollbar">
-            {groups.map((group, index) => (
-              <Button
-                key={group.id}
-                variant={activeGroupIndex === index ? "default" : "ghost"}
-                className={`px-3 py-2 ${activeGroupIndex === index ? 'bg-hogwarts-blue text-white' : 'text-hogwarts-light hover:bg-hogwarts-dark/30'}`}
-                onClick={() => setActiveGroupIndex(index)}
+          <div className="flex space-x-2 overflow-x-auto hide-scrollbar py-2 px-4 bg-hogwarts-dark/30 rounded-full backdrop-blur-sm w-auto">
+            <div className="flex space-x-1">
+              <motion.button 
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-hogwarts-dark/50 text-hogwarts-light hover:bg-hogwarts-dark/70 transition-all"
+                onClick={() => navigateGroups('prev')}
               >
-                <i className={`fas ${getGroupIcon(group.name)} mr-2`}></i>
-                {group.name}
-              </Button>
-            ))}
+                <i className="fas fa-chevron-left"></i>
+              </motion.button>
+              
+              {groups.slice(Math.max(0, activeGroupIndex - 2), Math.min(groups.length, activeGroupIndex + 3)).map((group, index, filteredGroups) => {
+                const actualIndex = groups.findIndex(g => g.id === group.id);
+                const isActive = actualIndex === activeGroupIndex;
+                
+                return (
+                  <motion.button
+                    key={group.id}
+                    whileHover={{ scale: isActive ? 1.1 : 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`px-3 py-1 mx-1 rounded-full flex items-center ${isActive 
+                      ? 'bg-hogwarts-blue text-white font-bold shadow-[0_0_10px_rgba(30,64,175,0.5)]' 
+                      : 'bg-hogwarts-dark/40 text-hogwarts-light hover:bg-hogwarts-dark/60'} transition-all`}
+                    onClick={() => {
+                      setActiveGroupIndex(actualIndex);
+                      // Reset the auto-cycle timer
+                      if (autoChangeTimer.current) {
+                        clearInterval(autoChangeTimer.current);
+                        autoChangeTimer.current = setInterval(() => {
+                          setActiveGroupIndex(current => (current + 1) % groups.length);
+                        }, 15000);
+                      }
+                    }}
+                  >
+                    <i className={`fas ${getGroupIcon(group.name)} mr-2`}></i>
+                    <span className="truncate max-w-[80px]">{group.name}</span>
+                  </motion.button>
+                );
+              })}
+              
+              <motion.button 
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-hogwarts-dark/50 text-hogwarts-light hover:bg-hogwarts-dark/70 transition-all"
+                onClick={() => navigateGroups('next')}
+              >
+                <i className="fas fa-chevron-right"></i>
+              </motion.button>
+            </div>
           </div>
         )}
       </div>
@@ -288,13 +393,23 @@ export default function SpectatorView() {
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center"
             >
-              {/* Group Title */}
-              <div className="mb-8 flex items-center justify-center">
-                <i className={`fas ${getGroupIcon(activeGroup.name)} text-5xl md:text-6xl text-hogwarts-gold mr-4`}></i>
-                <FontHarryP className="text-5xl md:text-6xl text-hogwarts-gold">
-                  {activeGroup.name}
-                </FontHarryP>
-              </div>
+              {/* Group Title with Theme Animation */}
+              <motion.div 
+                className="mb-8 flex items-center justify-center"
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className={`p-3 rounded-full bg-hogwarts-dark/40 border-2 ${getGroupStyles(activeGroup.theme).border} animate-${activeGroup.theme}`}>
+                  <i className={`fas ${getGroupIcon(activeGroup.name)} text-5xl md:text-6xl text-hogwarts-gold`}></i>
+                </div>
+                <div className="ml-4">
+                  <FontHarryP className="text-5xl md:text-6xl text-hogwarts-gold text-shadow">
+                    {activeGroup.name}
+                  </FontHarryP>
+                  <div className={`h-1 w-full bg-gradient-to-r from-transparent via-hogwarts-gold to-transparent mt-2`} />
+                </div>
+              </motion.div>
               
               {/* Governorates in this group - Big for visibility */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -304,7 +419,7 @@ export default function SpectatorView() {
                   return (
                     <motion.div
                       key={governorate.id}
-                      className={`border-4 ${styles.border} rounded-xl p-6 bg-gradient-to-b ${styles.bg} backdrop-blur-sm shadow-xl transform`}
+                      className={`border-4 ${styles.border} rounded-xl p-6 bg-gradient-to-b ${styles.bg} backdrop-blur-sm shadow-xl transform animate-${activeGroup.theme}`}
                       whileHover={{ scale: 1.05 }}
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ 
@@ -318,14 +433,21 @@ export default function SpectatorView() {
                         <i className={`fas fa-map-marker-alt text-4xl ${styles.text}`}></i>
                       </div>
                       <div className="text-center">
-                        <FontHarryP className={`text-4xl ${governorate.revealed ? 'text-hogwarts-gold animate-pulse text-shadow' : 'text-hogwarts-light'} mb-2`}>
+                        <FontHarryP 
+                          className={`text-4xl ${governorate.revealed ? 'text-hogwarts-gold text-shadow animate-magic-reveal' : 'text-hogwarts-light'} mb-2`}
+                        >
                           {governorate.name}
                         </FontHarryP>
                         <div className={`w-full h-1 bg-gradient-to-r from-transparent via-${governorate.revealed ? 'hogwarts-gold' : styles.text} to-transparent mt-2`} />
                         {governorate.revealed && (
-                          <div className="mt-4">
-                            <i className="fas fa-wand-sparkles text-hogwarts-gold text-3xl animate-magic-glow"></i>
-                          </div>
+                          <motion.div 
+                            className="mt-4"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                          >
+                            <i className="fas fa-wand-sparkles text-hogwarts-gold text-3xl animate-magic-wand"></i>
+                          </motion.div>
                         )}
                       </div>
                     </motion.div>
@@ -337,17 +459,59 @@ export default function SpectatorView() {
         </AnimatePresence>
       </main>
       
-      {/* Footer with pagination indicators */}
+      {/* Footer with enhanced theme-colored pagination indicators */}
       <footer className="fixed bottom-0 left-0 right-0 py-4 bg-hogwarts-dark/70 backdrop-blur-sm z-20">
-        <div className="container mx-auto flex justify-center">
-          {groups?.map((group, index) => (
-            <button
-              key={group.id}
-              onClick={() => setActiveGroupIndex(index)}
-              className={`w-4 h-4 mx-2 rounded-full ${activeGroupIndex === index ? 'bg-hogwarts-gold' : 'bg-hogwarts-light opacity-50'}`}
-              aria-label={`View group ${group.name}`}
-            />
-          ))}
+        <div className="container mx-auto flex flex-col items-center">
+          <div className="flex justify-center items-center">
+            {groups?.map((group, index) => {
+              const styles = getGroupStyles(group.theme);
+              const isActive = activeGroupIndex === index;
+              
+              return (
+                <motion.button
+                  key={group.id}
+                  onClick={() => {
+                    setActiveGroupIndex(index);
+                    // Reset the auto-cycle timer
+                    if (autoChangeTimer.current) {
+                      clearInterval(autoChangeTimer.current);
+                      autoChangeTimer.current = setInterval(() => {
+                        setActiveGroupIndex(current => (current + 1) % groups.length);
+                      }, 15000);
+                    }
+                  }}
+                  className={`mx-2 rounded-full border-2 ${isActive ? 'w-6 h-6 ' + styles.border : 'w-4 h-4 border-gray-500'} overflow-hidden relative`}
+                  animate={{
+                    scale: isActive ? 1.2 : 1,
+                    backgroundColor: isActive ? 'rgb(234, 179, 8)' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                  whileHover={{ scale: isActive ? 1.2 : 1.1 }}
+                  title={group.name}
+                  aria-label={`View group ${group.name}`}
+                >
+                  {isActive && (
+                    <motion.div 
+                      className={`absolute inset-0 animate-${group.theme}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+          
+          {activeGroup && (
+            <motion.div 
+              key={activeGroup.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 text-hogwarts-light text-sm"
+            >
+              <i className={`fas ${getGroupIcon(activeGroup.name)} mr-1`}></i>
+              {activeGroup.name}
+            </motion.div>
+          )}
         </div>
       </footer>
       
@@ -410,10 +574,12 @@ export default function SpectatorView() {
                   
                   <h3 className="text-xl font-bold text-hogwarts-gold mb-3 mt-6">Tips</h3>
                   <ul className="space-y-2">
-                    <li>• Use fullscreen mode for the best viewing experience</li>
-                    <li>• Groups auto-cycle every 15 seconds</li>
-                    <li>• Click on any dot at the bottom to jump to a specific group</li>
-                    <li>• Watch for animated effects when governorates are revealed</li>
+                    <li>• Use fullscreen mode (F key) for the best viewing experience</li>
+                    <li>• Groups auto-cycle every 15 seconds for hands-free viewing</li>
+                    <li>• Each group has unique magical animations matching its theme</li>
+                    <li>• Revealed governorates display special magical effects</li>
+                    <li>• Navigate between groups using arrow keys or the dots below</li>
+                    <li>• Press H anytime to show this help screen again</li>
                   </ul>
                 </div>
               </div>
