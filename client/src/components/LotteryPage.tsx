@@ -20,7 +20,8 @@ export default function LotteryPage({}: LotteryPageProps) {
   const [showResults, setShowResults] = useState(false);
   const [isLotteryStarted, setIsLotteryStarted] = useState(false);
   const [revealedCount, setRevealedCount] = useState(0);
-  const [viewMode, setViewMode] = useState<'governorates' | 'groups'>('groups');
+  // Only using groups view, removing the governorates view option
+  const [viewMode] = useState<'groups'>('groups');
   const { playRandomMagicSound } = useSound();
 
   // Fetch governorates data
@@ -70,11 +71,7 @@ export default function LotteryPage({}: LotteryPageProps) {
     revealCardMutation.mutate(governorate.id);
   }, [isLotteryStarted, revealCardMutation]);
 
-  // Toggle between view modes
-  const toggleViewMode = useCallback(() => {
-    setViewMode(prev => prev === 'governorates' ? 'groups' : 'governorates');
-    playRandomMagicSound();
-  }, [playRandomMagicSound]);
+  // Removed unused toggleViewMode function as we no longer switch views
 
   // Group governorates by their assigned group
   const governoratesByGroup = useMemo(() => {
@@ -149,42 +146,21 @@ export default function LotteryPage({}: LotteryPageProps) {
             )}
           </Button>
           
-          {isLotteryStarted && (
-            <Button
-              onClick={toggleViewMode}
-              className="font-serif text-hogwarts-light bg-hogwarts-red border-2 border-hogwarts-gold rounded-full px-6 py-4 text-md tracking-wide hover:scale-105 transition-all duration-300"
-            >
-              {viewMode === 'governorates' ? 'عرض المجموعات' : 'عرض المحافظات'}
-            </Button>
-          )}
+          {/* View mode toggle button removed */}
         </div>
         
-        {viewMode === 'governorates' ? (
-          /* Governorates Cards Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {governorates?.map((governorate) => (
-              <MagicCard
-                key={governorate.id}
-                governorate={governorate}
-                onClick={() => handleCardClick(governorate)}
-                isRevealed={governorate.revealed}
-              />
-            ))}
-          </div>
-        ) : (
-          /* Groups Grid with nested Governorates */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {groups?.map((group) => (
-              <GroupCard
-                key={group.id}
-                group={group}
-                governorates={governoratesByGroup[group.id] || []}
-                onGovernorateClick={handleCardClick}
-                isLotteryStarted={isLotteryStarted}
-              />
-            ))}
-          </div>
-        )}
+        {/* Only showing groups view with magical cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {groups?.map((group) => (
+            <GroupCard
+              key={group.id}
+              group={group}
+              governorates={governoratesByGroup[group.id] || []}
+              onGovernorateClick={handleCardClick}
+              isLotteryStarted={isLotteryStarted}
+            />
+          ))}
+        </div>
       </main>
 
       {/* Results Modal */}

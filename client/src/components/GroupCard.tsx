@@ -95,32 +95,38 @@ export default function GroupCard({
         </FontHarryP>
       </div>
       
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3">
         {governorates.map((governorate) => (
-          <div 
+          <motion.div 
             key={governorate.id}
             onClick={() => isLotteryStarted && onGovernorateClick(governorate)}
-            className={`relative p-3 border rounded-lg transition-all duration-300 
+            className={`relative p-4 border-2 rounded-lg transition-all duration-300 
                       ${isLotteryStarted && !governorate.revealed ? 'cursor-pointer' : ''}
                       ${governorate.revealed 
-                        ? 'bg-hogwarts-light border-hogwarts-gold' 
-                        : 'bg-hogwarts-dark/50 border-hogwarts-dark hover:border-hogwarts-red'}
+                        ? 'bg-gradient-to-r from-hogwarts-light to-hogwarts-light/80 border-hogwarts-gold' 
+                        : 'bg-gradient-to-r from-hogwarts-dark/80 to-hogwarts-dark/50 border-hogwarts-dark hover:border-hogwarts-gold'}
             `}
+            whileHover={!governorate.revealed ? { scale: 1.03, rotate: 1 } : {}}
+            animate={governorate.revealed ? { scale: [1, 1.05, 1] } : {}}
+            transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center text-right">
+            <div className="flex items-center justify-center">
               {governorate.revealed ? (
-                <>
-                  <i className="fas fa-landmark text-hogwarts-blue ml-2"></i>
-                  <span className="text-hogwarts-blue font-medium">{governorate.name}</span>
-                </>
+                <div className="text-center">
+                  <i className="fas fa-wand-sparkles text-2xl text-hogwarts-gold mb-2"></i>
+                  <div className="text-lg font-bold text-hogwarts-blue">{governorate.name}</div>
+                  <div className="mt-1 text-sm text-hogwarts-red">
+                    <i className="fas fa-hat-wizard mr-1"></i> {group.name}
+                  </div>
+                </div>
               ) : (
-                <>
-                  <i className="fas fa-question text-hogwarts-light/70 ml-2"></i>
-                  <span className="text-hogwarts-light/70">اضغط للكشف</span>
-                </>
+                <div className="text-center py-2">
+                  <i className="fas fa-magic text-3xl text-hogwarts-gold animate-pulse mb-2"></i>
+                  <div className="text-hogwarts-light font-medium">اضغط لكشف السحر</div>
+                </div>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
