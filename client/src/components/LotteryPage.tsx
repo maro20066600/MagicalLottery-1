@@ -119,11 +119,11 @@ export default function LotteryPage({}: LotteryPageProps) {
       
       {/* Header Section */}
       <header className="relative z-10 text-center py-8">
-        <FontHarryP className="text-hogwarts-gold text-4xl md:text-5xl lg:text-6xl mb-2">
-          مسابقة ساحرة
+        <FontHarryP className="text-hogwarts-blue text-4xl md:text-5xl lg:text-6xl mb-2">
+          YLY COMPETITION
         </FontHarryP>
         <FontHarryP className="text-hogwarts-light text-2xl md:text-3xl">
-          لمحافظات مصر
+          make your magic
         </FontHarryP>
         <div className="w-full max-w-xl mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-red to-transparent mt-4" />
       </header>

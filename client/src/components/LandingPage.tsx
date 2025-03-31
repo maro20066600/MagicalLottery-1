@@ -41,9 +41,12 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         >
           <FontHarryP
-            className="text-blue-500 text-7xl md:text-8xl lg:text-9xl mb-4 text-shadow"
+            className="text-hogwarts-blue text-7xl md:text-8xl lg:text-9xl mb-4 text-shadow"
           >
             YLY COMPETITION
+          </FontHarryP>
+          <FontHarryP className="text-hogwarts-light text-3xl md:text-4xl mb-4">
+            make your magic
           </FontHarryP>
         </motion.div>
         <div className="w-full max-w-lg mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-gold to-transparent" />
