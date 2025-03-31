@@ -69,6 +69,57 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Magical hover effects */
+.magical-hover {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.magical-hover:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255,215,0,0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.magical-hover:hover:before {
+  opacity: 1;
+  animation: magicalGlow 1.5s infinite;
+}
+
+@keyframes magicalGlow {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+/* Wand selection effect */
+.wand-select {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.wand-select:hover {
+  transform: translateY(-5px);
+  filter: drop-shadow(0 0 10px rgba(255, 223, 0, 0.5));
+}
+
+/* Spellcast animation */
+.spellcast {
+  animation: castSpell 0.5s ease-out;
+}
+
+@keyframes castSpell {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.5); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
 /* Custom theme animations */
 @keyframes redGoldPulse {
   0% { background-color: rgba(185, 28, 28, 0.05); }
@@ -170,6 +221,52 @@
   height: 100%;
   background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(234, 179, 8, 0.3) 50%, rgba(0,0,0,0) 100%);
   animation: blackGoldGleam 5s infinite;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  button {
+    min-width: unset;
+    width: 100%;
+    max-width: 300px;
+    margin: 0.5rem auto;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+  
+  .text-shadow {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* iPhone-specific adjustments */
+@media (max-width: 390px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  input, select {
+    font-size: 16px; /* Prevents zoom on iPhone */
+  }
 }
 
 @layer base {
