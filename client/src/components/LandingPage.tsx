@@ -29,6 +29,12 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
     >
       <div className="absolute inset-0 bg-hogwarts-dark bg-opacity-50" />
       
+      {/* Top bar with logos */}
+      <div className="fixed top-0 left-0 w-full flex justify-between items-center px-5 py-3 bg-white/80 backdrop-blur-sm z-50 shadow-md">
+        <div className="logo"><img src="https://i.postimg.cc/x8zM7DSg/Artboard-6-2-1.png" alt="لوجو 1" className="w-[100px] h-[100px] object-contain" /></div>
+        <div className="logo"><img src="https://i.postimg.cc/L4czPXzW/Artboard-1.png" alt="لوجو 2" className="w-[100px] h-[100px] object-contain" /></div>
+      </div>
+      
       {/* Logo and Title */}
       <motion.div 
         className="relative z-10 text-center mb-12"

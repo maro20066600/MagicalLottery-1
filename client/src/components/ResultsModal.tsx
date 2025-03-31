@@ -137,9 +137,14 @@ export default function ResultsModal({ onClose, onRedraw, groups, governorates }
           </Button>
         </div>
         
-        <FontHarryP className="text-hogwarts-blue text-4xl text-center mb-6">
-          YLY COMPETITION RESULTS
-        </FontHarryP>
+        {/* Top bar with logos */}
+        <div className="flex justify-between items-center mb-6 px-2">
+          <div className="logo"><img src="https://i.postimg.cc/x8zM7DSg/Artboard-6-2-1.png" alt="لوجو 1" className="w-[80px] h-[80px] object-contain" /></div>
+          <FontHarryP className="text-hogwarts-gold text-3xl text-center">
+            YLY COMPETITION RESULTS
+          </FontHarryP>
+          <div className="logo"><img src="https://i.postimg.cc/L4czPXzW/Artboard-1.png" alt="لوجو 2" className="w-[80px] h-[80px] object-contain" /></div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           {groups.map(group => {
