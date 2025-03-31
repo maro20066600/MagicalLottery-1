@@ -138,7 +138,7 @@ export default function ResultsModal({ onClose, onRedraw, groups, governorates }
         </div>
         
         <FontHarryP className="text-hogwarts-red text-4xl text-center mb-6">
-          Magical Lottery Results
+          نتائج السحر السحري
         </FontHarryP>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
@@ -174,13 +174,13 @@ export default function ResultsModal({ onClose, onRedraw, groups, governorates }
             onClick={handlePrintResults}
             className="font-[HarryP] text-hogwarts-light bg-hogwarts-blue border-2 border-hogwarts-gold rounded-full px-6 py-4 text-lg tracking-wide hover:scale-105 transition-all duration-300"
           >
-            <i className="fas fa-print mr-2"></i> Print Results
+            <i className="fas fa-print mr-2"></i> طباعة النتائج
           </Button>
           <Button 
             onClick={handleRedraw}
             className="font-[HarryP] text-hogwarts-light bg-hogwarts-red border-2 border-hogwarts-gold rounded-full px-6 py-4 text-lg tracking-wide hover:scale-105 transition-all duration-300"
           >
-            <i className="fas fa-wand-magic-sparkles mr-2"></i> Redraw Lottery
+            <i className="fas fa-wand-magic-sparkles mr-2"></i> إعادة السحب
           </Button>
         </div>
       </motion.div>
