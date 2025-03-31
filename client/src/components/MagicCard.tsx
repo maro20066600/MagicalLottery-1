@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Governorate } from '@shared/schema';
 import { FontHarryP } from '@/components/ui/font-harry-p';
 import { Card } from '@/components/ui/card';
+import { useSound } from '@/hooks/use-sound';
+import { cardFlip } from '@/lib/animations';
 
 interface MagicCardProps {
   governorate: Governorate;
@@ -10,6 +12,8 @@ interface MagicCardProps {
 }
 
 export default function MagicCard({ governorate, isRevealed, onClick }: MagicCardProps) {
+  const { playRandomMagicSound } = useSound();
+
   // Icons for different governorates (or default to landmark)
   const getGovernorateIcon = (name: string) => {
     const icons: Record<string, string> = {
@@ -25,14 +29,25 @@ export default function MagicCard({ governorate, isRevealed, onClick }: MagicCar
     
     return icons[name] || 'fa-landmark';
   };
+  
+  // Handler for card click with delay
+  const handleCardClick = () => {
+    playRandomMagicSound();
+    
+    // Delay for animation effect (2 seconds)
+    setTimeout(() => {
+      onClick();
+    }, 2000);
+  };
 
   return (
     <motion.div
       className={`card-flip ${isRevealed ? 'is-flipped' : ''}`}
       whileHover={{ scale: isRevealed ? 1 : 1.03 }}
-      onClick={!isRevealed ? onClick : undefined}
+      onClick={!isRevealed ? handleCardClick : undefined}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      variants={cardFlip}
       transition={{ duration: 0.5 }}
     >
       <Card className="relative w-full h-64 perspective">
@@ -46,7 +61,7 @@ export default function MagicCard({ governorate, isRevealed, onClick }: MagicCar
             >
               ?
             </motion.div>
-            <p className="font-serif text-lg text-hogwarts-light">Click to reveal governorate</p>
+            <p className="font-serif text-lg text-hogwarts-light">انقر للكشف عن المحافظة</p>
             <div className="absolute inset-0 rounded-lg bg-radial-glow" />
           </div>
           
@@ -60,7 +75,7 @@ export default function MagicCard({ governorate, isRevealed, onClick }: MagicCar
             </FontHarryP>
             {governorate.groupName && (
               <p className="font-serif text-sm text-hogwarts-dark text-center">
-                Group: <span className="font-bold text-hogwarts-red">{governorate.groupName}</span>
+                المجموعة: <span className="font-bold text-hogwarts-red">{governorate.groupName}</span>
               </p>
             )}
           </div>
