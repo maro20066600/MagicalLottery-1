@@ -143,7 +143,7 @@ export default function ResultsModal({ onClose, onRedraw, groups, governorates }
           <FontHarryP className="text-hogwarts-gold text-3xl text-center">
             YLY COMPETITION RESULTS
           </FontHarryP>
-          <div className="logo"><img src="https://i.postimg.cc/L4czPXzW/Artboard-1.png" alt="لوجو 2" className="w-[100px] h-[100px] object-contain" /></div>
+          <div className="logo"><img src="https://i.postimg.cc/L4czPXzW/Artboard-1.png" alt="لوجو 2" className="w-[120px] h-[120px] object-contain" /></div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
