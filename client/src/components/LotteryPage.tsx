@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FontHarryP } from "@/components/ui/font-harry-p";
 import MagicCard from "@/components/MagicCard";
 import GroupCard from "@/components/GroupCard";
-import YouTubePlayer from "@/components/YouTubePlayer";
+//import YouTubePlayer from "@/components/YouTubePlayer"; // Now handled in App.tsx
 import { useSound } from "@/hooks/use-sound";
 import { fadeIn } from "@/lib/animations";
 import ResultsModal from "@/components/ResultsModal";
@@ -181,8 +181,7 @@ export default function LotteryPage({}: LotteryPageProps) {
         )}
       </AnimatePresence>
       
-      {/* YouTube Music Player for Lottery Page */}
-      <YouTubePlayer />
+      {/* YouTube Music Player now moved to App.tsx */}
     </motion.div>
   );
 }
