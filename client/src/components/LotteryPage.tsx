@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+// Updated LotteryPage with new viewMode functionality
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { FontHarryP } from "@/components/ui/font-harry-p";
 import MagicCard from "@/components/MagicCard";
+import GroupCard from "@/components/GroupCard";
 import { useSound } from "@/hooks/use-sound";
 import { fadeIn } from "@/lib/animations";
 import ResultsModal from "@/components/ResultsModal";
@@ -18,6 +20,7 @@ export default function LotteryPage({}: LotteryPageProps) {
   const [showResults, setShowResults] = useState(false);
   const [isLotteryStarted, setIsLotteryStarted] = useState(false);
   const [revealedCount, setRevealedCount] = useState(0);
+  const [viewMode, setViewMode] = useState<'governorates' | 'groups'>('groups');
   const { playRandomMagicSound } = useSound();
 
   // Fetch governorates data
@@ -67,6 +70,33 @@ export default function LotteryPage({}: LotteryPageProps) {
     revealCardMutation.mutate(governorate.id);
   }, [isLotteryStarted, revealCardMutation]);
 
+  // Toggle between view modes
+  const toggleViewMode = useCallback(() => {
+    setViewMode(prev => prev === 'governorates' ? 'groups' : 'governorates');
+    playRandomMagicSound();
+  }, [playRandomMagicSound]);
+
+  // Group governorates by their assigned group
+  const governoratesByGroup = useMemo(() => {
+    if (!governorates || !groups) return {};
+    
+    const groupMap: Record<number, Governorate[]> = {};
+    
+    // Initialize empty arrays for each group
+    groups.forEach(group => {
+      groupMap[group.id] = [];
+    });
+    
+    // Add governorates to their respective groups
+    governorates.forEach(governorate => {
+      if (governorate.groupId) {
+        groupMap[governorate.groupId] = [...(groupMap[governorate.groupId] || []), governorate];
+      }
+    });
+    
+    return groupMap;
+  }, [governorates, groups]);
+
   // Show results when all cards are revealed
   useEffect(() => {
     if (governorates && revealedCount === governorates.length && revealedCount > 0) {
@@ -92,17 +122,17 @@ export default function LotteryPage({}: LotteryPageProps) {
       {/* Header Section */}
       <header className="relative z-10 text-center py-8">
         <FontHarryP className="text-hogwarts-gold text-4xl md:text-5xl lg:text-6xl mb-2">
-          The Magical Lottery
+          مسابقة ساحرة
         </FontHarryP>
         <FontHarryP className="text-hogwarts-light text-2xl md:text-3xl">
-          for Egyptian Governorates
+          لمحافظات مصر
         </FontHarryP>
         <div className="w-full max-w-xl mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-red to-transparent mt-4" />
       </header>
       
-      {/* Main Lottery Cards */}
+      {/* Main Content */}
       <main className="relative z-10 container mx-auto px-4 py-8">
-        <div className="flex justify-center mb-8">
+        <div className="flex flex-col items-center justify-center gap-4 mb-8">
           <Button
             onClick={handleStartLottery}
             disabled={isLotteryStarted || isLoading}
@@ -110,27 +140,51 @@ export default function LotteryPage({}: LotteryPageProps) {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري التحميل...
               </>
             ) : (
               <>
-                <i className="fas fa-wand-sparkles mr-2"></i> Start the Magic Lottery
+                <i className="fas fa-wand-sparkles mr-2"></i> بدء السحر
               </>
             )}
           </Button>
+          
+          {isLotteryStarted && (
+            <Button
+              onClick={toggleViewMode}
+              className="font-serif text-hogwarts-light bg-hogwarts-red border-2 border-hogwarts-gold rounded-full px-6 py-4 text-md tracking-wide hover:scale-105 transition-all duration-300"
+            >
+              {viewMode === 'governorates' ? 'عرض المجموعات' : 'عرض المحافظات'}
+            </Button>
+          )}
         </div>
         
-        {/* Lottery Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {governorates?.map((governorate) => (
-            <MagicCard
-              key={governorate.id}
-              governorate={governorate}
-              onClick={() => handleCardClick(governorate)}
-              isRevealed={governorate.revealed}
-            />
-          ))}
-        </div>
+        {viewMode === 'governorates' ? (
+          /* Governorates Cards Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {governorates?.map((governorate) => (
+              <MagicCard
+                key={governorate.id}
+                governorate={governorate}
+                onClick={() => handleCardClick(governorate)}
+                isRevealed={governorate.revealed}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Groups Grid with nested Governorates */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {groups?.map((group) => (
+              <GroupCard
+                key={group.id}
+                group={group}
+                governorates={governoratesByGroup[group.id] || []}
+                onGovernorateClick={handleCardClick}
+                isLotteryStarted={isLotteryStarted}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
       {/* Results Modal */}

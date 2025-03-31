@@ -1,0 +1,128 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FontHarryP } from '@/components/ui/font-harry-p';
+import { Card, CardContent } from '@/components/ui/card';
+import { Governorate, Group } from '@shared/schema';
+
+interface GroupCardProps {
+  group: Group;
+  governorates: Governorate[];
+  onGovernorateClick: (governorate: Governorate) => void;
+  isLotteryStarted: boolean;
+}
+
+export default function GroupCard({ 
+  group, 
+  governorates, 
+  onGovernorateClick,
+  isLotteryStarted 
+}: GroupCardProps) {
+  // Get styles based on group theme
+  const getGroupStyles = (theme: string) => {
+    const themes: Record<string, { bg: string, border: string, text: string, accent: string }> = {
+      'red-gold': { 
+        bg: 'from-hogwarts-red/20 to-transparent', 
+        border: 'border-hogwarts-gold', 
+        text: 'text-hogwarts-red',
+        accent: 'text-hogwarts-gold'
+      },
+      'blue-silver': { 
+        bg: 'from-hogwarts-blue/20 to-transparent', 
+        border: 'border-gray-300', 
+        text: 'text-hogwarts-blue',
+        accent: 'text-gray-400'
+      },
+      'green-silver': { 
+        bg: 'from-green-700/20 to-transparent', 
+        border: 'border-gray-300', 
+        text: 'text-green-700',
+        accent: 'text-gray-400'
+      },
+      'yellow-black': { 
+        bg: 'from-yellow-600/20 to-transparent', 
+        border: 'border-hogwarts-dark', 
+        text: 'text-yellow-600',
+        accent: 'text-hogwarts-dark'
+      },
+      'purple-gold': { 
+        bg: 'from-purple-700/20 to-transparent', 
+        border: 'border-hogwarts-gold', 
+        text: 'text-purple-700',
+        accent: 'text-hogwarts-gold'
+      },
+      'light-blue-silver': { 
+        bg: 'from-sky-500/20 to-transparent', 
+        border: 'border-gray-300', 
+        text: 'text-sky-500',
+        accent: 'text-gray-400'
+      },
+      'dark-green-gold': { 
+        bg: 'from-emerald-800/20 to-transparent', 
+        border: 'border-hogwarts-gold', 
+        text: 'text-emerald-800',
+        accent: 'text-hogwarts-gold'
+      },
+      'burgundy-silver': { 
+        bg: 'from-rose-800/20 to-transparent', 
+        border: 'border-gray-300', 
+        text: 'text-rose-800',
+        accent: 'text-gray-400'
+      },
+      'black-gold': { 
+        bg: 'from-slate-800/20 to-transparent', 
+        border: 'border-hogwarts-gold', 
+        text: 'text-slate-800',
+        accent: 'text-hogwarts-gold'
+      }
+    };
+    
+    return themes[theme] || themes['red-gold'];
+  };
+
+  const styles = getGroupStyles(group.theme);
+
+  return (
+    <motion.div
+      className={`bg-gradient-to-b ${styles.bg} border-2 ${styles.border} rounded-lg p-4 h-full`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center justify-center mb-4">
+        <i className={`fas ${group.icon} text-3xl ${styles.text}`}></i>
+        <FontHarryP className={`text-2xl ${styles.text} mr-3`}>
+          {group.name}
+        </FontHarryP>
+      </div>
+      
+      <div className="space-y-3">
+        {governorates.map((governorate) => (
+          <div 
+            key={governorate.id}
+            onClick={() => isLotteryStarted && onGovernorateClick(governorate)}
+            className={`relative p-3 border rounded-lg transition-all duration-300 
+                      ${isLotteryStarted && !governorate.revealed ? 'cursor-pointer' : ''}
+                      ${governorate.revealed 
+                        ? 'bg-hogwarts-light border-hogwarts-gold' 
+                        : 'bg-hogwarts-dark/50 border-hogwarts-dark hover:border-hogwarts-red'}
+            `}
+          >
+            <div className="flex items-center text-right">
+              {governorate.revealed ? (
+                <>
+                  <i className="fas fa-landmark text-hogwarts-blue ml-2"></i>
+                  <span className="text-hogwarts-blue font-medium">{governorate.name}</span>
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-question text-hogwarts-light/70 ml-2"></i>
+                  <span className="text-hogwarts-light/70">اضغط للكشف</span>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
