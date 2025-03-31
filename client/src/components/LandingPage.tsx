@@ -41,7 +41,7 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         >
           <FontHarryP
-            className="text-[#00eeff] text-7xl md:text-8xl lg:text-9xl mb-4 text-shadow"
+            className="text-blue-600 text-7xl md:text-8xl lg:text-9xl mb-4 text-shadow"
           >
             YLY COMPETITION
           </FontHarryP>
