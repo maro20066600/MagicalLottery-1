@@ -36,11 +36,16 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
         variants={fadeUp}
         custom={0.3}
       >
-        <FontHarryP
-          className="text-hogwarts-blue text-7xl md:text-8xl lg:text-9xl mb-4 animate-float text-shadow"
+        <motion.div
+          animate={{ y: [0, -15, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         >
-          هاري بوتر
-        </FontHarryP>
+          <FontHarryP
+            className="text-hogwarts-blue text-7xl md:text-8xl lg:text-9xl mb-4 text-shadow"
+          >
+            YLY COMPETITION
+          </FontHarryP>
+        </motion.div>
         <div className="w-full max-w-lg mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-gold to-transparent" />
       </motion.div>
       
@@ -51,9 +56,14 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
       >
         <Button
           onClick={handleStartClick}
-          className="relative z-10 font-[HarryP] text-hogwarts-light bg-hogwarts-blue border-2 border-hogwarts-gold rounded-full px-10 py-7 text-2xl md:text-3xl tracking-wide hover:scale-105 transition-all duration-300 magic-glow shadow-glow"
+          className="relative z-10 font-[HarryP] text-hogwarts-light bg-hogwarts-dark border-2 border-hogwarts-gold rounded-md px-10 py-7 text-2xl md:text-3xl tracking-wide hover:scale-105 transition-all duration-300 magic-glow shadow-glow"
+          style={{ 
+            background: "url('https://i.pinimg.com/originals/e1/78/2a/e1782a75fb6fd87bf0a5ccc6e2e5b4d8.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
         >
-          ابدأ السحر
+          START MAGIC
         </Button>
       </motion.div>
       

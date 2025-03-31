@@ -71,14 +71,7 @@ export default function YouTubePlayer() {
         size="sm" 
         className="bg-hogwarts-gold text-black hover:bg-hogwarts-gold/80"
       >
-        تشغيل الموسيقى
-      </Button>
-      <Button 
-        onClick={pauseMusic} 
-        size="sm" 
-        className="bg-hogwarts-red text-white hover:bg-hogwarts-red/80"
-      >
-        إيقاف الموسيقى
+        Play Music
       </Button>
     </div>
   );
