@@ -69,9 +69,9 @@ export default function YouTubePlayer() {
       <Button 
         onClick={playMusic} 
         size="sm" 
-        className="bg-hogwarts-gold text-black hover:bg-hogwarts-gold/80"
+        className="bg-hogwarts-gold text-black hover:bg-hogwarts-gold/80 font-bold"
       >
-        Play Music
+        <i className="fas fa-music mr-1"></i> تشغيل الموسيقى
       </Button>
     </div>
   );
