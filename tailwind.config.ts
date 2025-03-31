@@ -11,7 +11,6 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        'hogwarts-blue': '#0097FB',
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
