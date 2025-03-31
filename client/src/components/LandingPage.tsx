@@ -70,8 +70,7 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
       {/* Floating Particles */}
       <MagicParticles count={70} />
       
-      {/* YouTube Music Player */}
-      <YouTubePlayer />
+      {/* YouTube Music Player now moved to App.tsx */}
     </motion.div>
   );
 }
