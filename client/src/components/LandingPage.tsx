@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { FontHarryP } from "@/components/ui/font-harry-p";
 import MagicParticles from "@/components/MagicParticles";
+import YouTubePlayer from "@/components/YouTubePlayer";
 import { useSound } from "@/hooks/use-sound";
 import { fadeUp, fadeIn } from "@/lib/animations";
 import { useCallback } from "react";
@@ -38,7 +39,7 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
         <FontHarryP
           className="text-hogwarts-blue text-7xl md:text-8xl lg:text-9xl mb-4 animate-float text-shadow"
         >
-          YLY COMPETITION
+          هاري بوتر
         </FontHarryP>
         <div className="w-full max-w-lg mx-auto h-1 bg-gradient-to-r from-transparent via-hogwarts-gold to-transparent" />
       </motion.div>
@@ -52,12 +53,15 @@ export default function LandingPage({ onStartClick }: LandingPageProps) {
           onClick={handleStartClick}
           className="relative z-10 font-[HarryP] text-hogwarts-light bg-hogwarts-blue border-2 border-hogwarts-gold rounded-full px-10 py-7 text-2xl md:text-3xl tracking-wide hover:scale-105 transition-all duration-300 magic-glow shadow-glow"
         >
-          START MAGIC
+          ابدأ السحر
         </Button>
       </motion.div>
       
       {/* Floating Particles */}
       <MagicParticles count={70} />
+      
+      {/* YouTube Music Player */}
+      <YouTubePlayer />
     </motion.div>
   );
 }

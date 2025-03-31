@@ -23,7 +23,16 @@ export const fadeUp = {
 };
 
 export const cardFlip = {
-  initial: { rotateY: 0 },
+  hidden: { scale: 1, rotateY: 0 },
+  visible: { 
+    scale: [1, 1.1, 1.15, 1.1, 1],
+    rotateY: 0,
+    transition: {
+      duration: 2.0, 
+      times: [0, 0.25, 0.5, 0.75, 1],
+      ease: "easeInOut"
+    }
+  },
   flipped: { 
     rotateY: 180,
     transition: {
